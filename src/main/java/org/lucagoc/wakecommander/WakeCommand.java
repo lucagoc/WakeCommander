@@ -46,7 +46,7 @@ public class WakeCommand {
                         })
                         .executes(context -> {
                             String argumentProvided = context.getArgument("server", String.class);
-                            WakeCommander.wake(); // argumentProvided
+                            WakeCommander.wake(argumentProvided); // argumentProvided
 
                             context.getSource().sendMessage(Component.text("Waking Server " + argumentProvided));
                             return Command.SINGLE_SUCCESS;

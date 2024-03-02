@@ -13,15 +13,14 @@ import com.velocitypowered.api.plugin.PluginContainer;
 import com.velocitypowered.api.plugin.annotation.DataDirectory;
 import com.velocitypowered.api.proxy.Player;
 import com.velocitypowered.api.proxy.ProxyServer;
-import com.velocitypowered.api.proxy.server.RegisteredServer;
 import dev.dejvokep.boostedyaml.YamlDocument;
 import dev.dejvokep.boostedyaml.dvs.versioning.BasicVersioning;
+import dev.dejvokep.boostedyaml.route.Route;
 import dev.dejvokep.boostedyaml.settings.dumper.DumperSettings;
 import dev.dejvokep.boostedyaml.settings.general.GeneralSettings;
 import dev.dejvokep.boostedyaml.settings.loader.LoaderSettings;
 import dev.dejvokep.boostedyaml.settings.updater.UpdaterSettings;
 import lombok.Getter;
-import lombok.Setter;
 import org.slf4j.Logger;
 
 import java.nio.file.Path;
@@ -61,21 +60,24 @@ public class WakeCommander {
         commandManager.register(commandMeta, wakeCommand);
     }
 
-    public static void wake() {
+    public static void wake(String serverName) {
 
-        String adresseDestinataire = "127.0.0.1";
-        int portDestinataire = 12345;
+        String serverAddress = config.getString("servers." + serverName + ".address");
+        String secretToken = config.getString("servers." + serverName + ".secret-token");
+        int serverPort = config.getInt("servers." + serverName + ".port");
+
+        logger.info("Sending waking request to "+ serverName + " at " + serverAddress + ":" + serverPort + " with token :" + secretToken);
 
         try {
             // Creating the socket
-            Socket socket = new Socket(adresseDestinataire, portDestinataire);
+            Socket socket = new Socket(serverAddress, serverPort);
 
             // Stream to send the data
             OutputStream outputStream = socket.getOutputStream();
             PrintWriter writer = new PrintWriter(outputStream, true);
 
             // Sending data
-            writer.println("THE MAGIC KEY"); // C'est la qu'il faut insérer la clé !
+            writer.println(secretToken);
 
             // Closing socket and writer
             writer.close();
